@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 94b95c3a3c926d5d8a3ff29007dd7dcb35ba4df37f3f95191dbcfdb3b940cbfc
+-- hash: 7ce5bd40cac71e4ab9333cc97799856e7aa47226df16e7b2fd8f6ff2374c5aa8
 
 name:           adjust-nvidia-mosaic
 version:        0.1.0.0
@@ -17,7 +17,6 @@ license-file:   LICENSE
 build-type:     Custom
 cabal-version:  >= 1.24
 extra-source-files:
-    ChangeLog.md
     README.md
 
 source-repository head
