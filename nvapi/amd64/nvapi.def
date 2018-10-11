@@ -1,0 +1,23 @@
+LIBRARY nvapi
+
+EXPORTS
+  NvAPI_EnumPhysicalGPUs
+  NvAPI_EnumNvidiaDisplayHandle
+  NvAPI_GetAssociatedNvidiaDisplayName
+  NvAPI_GetAssociatedNvidiaDisplayHandle
+  NvAPI_Initialize
+  NvAPI_Unload
+  NvAPI_GetInterfaceVersionString
+  NvAPI_GetErrorMessage
+  NvAPI_DISP_GetDisplayIdByDisplayName
+  NvAPI_GPU_GetConnectedDisplayIds
+  NvAPI_GPU_GetScanoutConfiguration
+  NvAPI_GPU_GetScanoutConfigurationEx
+  NvAPI_GPU_GetScanoutIntensityState
+  NvAPI_GPU_GetScanoutWarpingState
+  NvAPI_GPU_SetScanoutCompositionParameter
+  NvAPI_GPU_SetScanoutIntensity
+  NvAPI_GPU_SetScanoutWarping
+  NvAPI_GPU_WorkstationFeatureQuery
+  NvAPI_VIO_SetConfig
+  NvAPI_VIO_GetConfig

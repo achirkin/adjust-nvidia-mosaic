@@ -1,0 +1,4 @@
+--outputfile=ghcid.txt
+--command="stack ghci --main-is adjust-nvidia-mosaic:exe:adjust-nvidia-mosaic-exe"
+--restart=package.yaml
+--restart=stack.yaml

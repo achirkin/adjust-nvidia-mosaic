@@ -1,0 +1,62 @@
+name:                adjust-nvidia-mosaic
+version:             0.1.0.0
+github:              "achirkin/adjust-nvidia-mosaic"
+license:             BSD3
+author:              "Artem Chirkin"
+maintainer:          "chirkin@arch.ethz.ch"
+copyright:           "Copyright: (c) 2018 Artem Chirkin"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/achirkin/adjust-nvidia-mosaic#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- yaml >= 0.8 && < 0.11
+- bytestring >= 0.10 && < 0.11
+- containers
+- aeson
+- text
+- haskeline
+- transformers
+- mtl
+
+custom-setup:
+  dependencies:
+    - base
+    - Cabal
+    - directory
+    - filepath
+    - typed-process
+
+
+library:
+  source-dirs: src
+  ghc-options: -Wall -ferror-spans
+  include-dirs: nvapi
+  extra-libraries:
+    - nvapi
+    - Dxva2
+  build-tools: c2hs
+  c-sources:
+    - src/Lib/NvAPI/FFIconsts.c
+
+executables:
+  adjust-nvidia-mosaic:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - adjust-nvidia-mosaic

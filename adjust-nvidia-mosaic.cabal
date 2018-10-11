@@ -1,0 +1,86 @@
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 94b95c3a3c926d5d8a3ff29007dd7dcb35ba4df37f3f95191dbcfdb3b940cbfc
+
+name:           adjust-nvidia-mosaic
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/achirkin/adjust-nvidia-mosaic#readme>
+homepage:       https://github.com/achirkin/adjust-nvidia-mosaic#readme
+bug-reports:    https://github.com/achirkin/adjust-nvidia-mosaic/issues
+author:         Artem Chirkin
+maintainer:     chirkin@arch.ethz.ch
+copyright:      Copyright: (c) 2018 Artem Chirkin
+license:        BSD3
+license-file:   LICENSE
+build-type:     Custom
+cabal-version:  >= 1.24
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/achirkin/adjust-nvidia-mosaic
+
+custom-setup
+  setup-depends:
+      Cabal
+    , base
+    , directory
+    , filepath
+    , typed-process
+
+library
+  exposed-modules:
+      Lib
+      Lib.Dxva.FFI
+      Lib.Mosaic
+      Lib.NvAPI
+      Lib.NvAPI.FFI
+  other-modules:
+      Paths_adjust_nvidia_mosaic
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -ferror-spans
+  include-dirs:
+      nvapi
+  c-sources:
+      src/Lib/NvAPI/FFIconsts.c
+  extra-libraries:
+      nvapi
+      Dxva2
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring >=0.10 && <0.11
+    , containers
+    , haskeline
+    , mtl
+    , text
+    , transformers
+    , yaml >=0.8 && <0.11
+  build-tools:
+      c2hs
+  default-language: Haskell2010
+
+executable adjust-nvidia-mosaic
+  main-is: Main.hs
+  other-modules:
+      Paths_adjust_nvidia_mosaic
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      adjust-nvidia-mosaic
+    , aeson
+    , base >=4.7 && <5
+    , bytestring >=0.10 && <0.11
+    , containers
+    , haskeline
+    , mtl
+    , text
+    , transformers
+    , yaml >=0.8 && <0.11
+  default-language: Haskell2010
