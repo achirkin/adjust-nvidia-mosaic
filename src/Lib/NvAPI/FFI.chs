@@ -219,12 +219,12 @@ data NvGPUDisplayIds = NvGPUDisplayIds
 
 
 instance Storable NvGPUDisplayIds where
-  sizeOf _ = {#sizeof NV_GPU_DISPLAYIDS #}
-  alignment _ = {#alignof NV_GPU_DISPLAYIDS #}
+  sizeOf _ = 16 -- {#sizeof NV_GPU_DISPLAYIDS #}
+  alignment _ = 8 -- {#alignof NV_GPU_DISPLAYIDS #}
   peek p = do
-    connectorType <- peekByteOff p {#offsetof NV_GPU_DISPLAYIDS->connectorType #}
-    displayId <- peekByteOff p {#offsetof NV_GPU_DISPLAYIDS->displayId #}
-    bf <- peekByteOff p ({#offsetof NV_GPU_DISPLAYIDS->displayId #} + {#sizeof NvU32 #})
+    connectorType <- peekByteOff p 4 -- {#offsetof NV_GPU_DISPLAYIDS->connectorType #}
+    displayId <- peekByteOff p 8 -- {#offsetof NV_GPU_DISPLAYIDS->displayId #}
+    bf <- peekByteOff p 12 -- ({#offsetof NV_GPU_DISPLAYIDS->displayId #} + {#sizeof NvU32 #})
     let isDynamic = testBit (bf :: NvU32) 0
         isMultiStreamRootNode = testBit bf 1
         isActive = testBit bf 2
@@ -235,10 +235,10 @@ instance Storable NvGPUDisplayIds where
         isPhysicallyConnected = testBit bf 17
     return NvGPUDisplayIds {..}
   poke p NvGPUDisplayIds{..} = do
-      pokeByteOff p {#offsetof NV_GPU_DISPLAYIDS->version #} _NV_GPU_DISPLAYIDS_VER
-      pokeByteOff p {#offsetof NV_GPU_DISPLAYIDS->connectorType #} connectorType
-      pokeByteOff p {#offsetof NV_GPU_DISPLAYIDS->displayId #} displayId
-      pokeByteOff p ({#offsetof NV_GPU_DISPLAYIDS->displayId #} + {#sizeof NvU32 #})
+      pokeByteOff p 0 _NV_GPU_DISPLAYIDS_VER -- {#offsetof NV_GPU_DISPLAYIDS->version #} _NV_GPU_DISPLAYIDS_VER
+      pokeByteOff p 4 connectorType -- {#offsetof NV_GPU_DISPLAYIDS->connectorType #} connectorType
+      pokeByteOff p 8 displayId -- {#offsetof NV_GPU_DISPLAYIDS->displayId #} displayId
+      pokeByteOff p 12 -- ({#offsetof NV_GPU_DISPLAYIDS->displayId #} + {#sizeof NvU32 #})
         $ f 0 isDynamic
         $ f 1 isMultiStreamRootNode
         $ f 2 isActive
@@ -267,7 +267,7 @@ newtype NvS32 = NvS32 {#type NvS32#}
   deriving (Eq, Ord, Show, Read, Num, Real, Integral, Enum, Bounded, Storable, Bits)
 
 newtype NvDisplayId = NvDisplayId NvU32
-  deriving (Eq, Show, Read, Storable)
+  deriving (Eq, Ord, Show, Read, Storable)
 
 
 {#fun unsafe NvAPI_Initialize as c_NvAPI_Initialize

@@ -151,6 +151,18 @@ data MonitorDesc = MonitorDesc
   , phHandles :: [PMonitor]
   } deriving (Eq, Show)
 
+defMonDesc :: String -> MonitorDesc
+defMonDesc dname = MonitorDesc
+  { winHandle = nullPtr
+  , winMoInfo = WinMonitorInfo
+     { rcMonitor = WinRect 0 0 0 0
+     , rcWork = WinRect 0 0 0 0
+     , dwFlags = 0
+     , szDevice = dname
+     }
+  , phHandles = []
+  }
+
 enumMonitors :: IO [MonitorDesc]
 enumMonitors = do
   efun <- wrapMONITORENUMPROC $ \inh _ _ outh -> do

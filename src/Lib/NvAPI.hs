@@ -22,7 +22,7 @@ import           Control.Exception
 import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Reader.Class
-import           Data.List                  (sortBy)
+import           Data.List                  (sortBy, sortOn)
 import           Data.Map.Strict            (Map)
 import qualified Data.Map.Strict            as Map
 import           Foreign.C.String           (peekCString, withCString)
@@ -41,11 +41,27 @@ type DisplayEnv = Map DisplayName (MonitorDesc, NvDisplayId)
 
 findAllDisplays :: IO DisplayEnv
 findAllDisplays = do
+  dispIds <- enumPhysicalGPUs >>= fmap (fmap displayId . join) . traverse getConnectedDisplays
   mons <- enumMonitors
-  monsdIds <- forM mons $ \md -> do
+  monsdIds1 <- forM mons $ \md -> do
     let na = szDevice $ winMoInfo md
     dId <- displayNameToId na
     return (DisplayName na, (md, dId))
+  
+  when (null monsdIds1) $ fail "Could not find any monitors"
+  when (null dispIds) $ fail "Could not find any connected displays"
+  
+  let monsdIds2 = map dummyDesc dispIds
+      dummyDesc (NvDisplayId i) = let na = "nameless-" <> show (fromIntegral i :: Int)
+                                  in (DisplayName na, (defMonDesc na, (NvDisplayId i)))
+      monsdIds = mergeDisplays (sortOn (snd . snd) monsdIds1) (sortOn (snd . snd) monsdIds2)
+      mergeDisplays [] ds2 = ds2
+      mergeDisplays ds1 [] = ds1
+      mergeDisplays (de1@(_,(_,i1)):ds1) (de2@(_,(_,i2)):ds2) 
+        | i1 == i2 = de1:mergeDisplays ds1 ds2
+        | i1 <  i2 = de1:mergeDisplays ds1 (de2:ds2)
+        | otherwise = de2:mergeDisplays (de1:ds1) ds2
+
   return $ Map.fromList monsdIds
 
 
@@ -109,12 +125,12 @@ applyDisplayIntensity d = do
       ) `catch` ( \e -> print (e :: SomeException) )
   where
     screenOrdering (Pos ix jx, _) (Pos iy jy, _)
-      = compare ix iy <> compare jx jy
+      = compare jx jy <> compare ix iy 
     scrs = map (screenRGB . snd) . sortBy screenOrdering $ Map.toList (screens d)
     tr2list (a,b,c) = map (\x -> realToFrac x / 100) [a,b,c]
     siData = NvScanoutIntensityData
-        { width             = 2
-        , height            = 2
+        { width             = fromIntegral . col $ size d
+        , height            = fromIntegral . row $ size d
         , blendingTexture   = scrs >>= tr2list . scale
         , offsetTexture     = scrs >>= tr2list . offset
         , offsetTexChannels = 3
@@ -192,8 +208,8 @@ getConnectedDisplays gpuHandle = alloca $ \nPtr -> do
                       , isCluster = False
                       , isOSVisible = False
                       , isWFD = False
-                      , isConnected = True
-                      , isPhysicallyConnected = True
+                      , isConnected = False
+                      , isPhysicallyConnected = False
                       }
                    ) $ \dsPtr -> do
       c_NvAPI_GPU_GetConnectedDisplayIds gpuHandle dsPtr nPtr 0
